@@ -1,14 +1,14 @@
 # Paywall test telegram bot
 
-- [ ] Initial docker enviorment
-  - [ ] Docker
-  - [ ] PHP 8
-  - [ ] Nginx
-  - [ ] New Symfony 6 application
-  - [ ] Xdebug
-  - [ ] PHP Unit
-- [ ] Server archetecture
-  - [ ] Api platform
+- [x] Initial docker enviorment
+  - [x] Docker
+  - [x] PHP 8
+  - [x] Nginx
+  - [x] Symfony 6 application
+  - [x] Xdebug
+  - [x] Api platform
+  - [x] PHP Unit
+- [ ] App server archetecture
   - [ ] Entities & API
   - [ ] Unit tests
 - [ ] Telegram bot
