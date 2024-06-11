@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: php-fpm
+    env: docker
+    buildCommand: docker build -t php-fpm --build-arg PUID=${PUID} --build-arg PGID=${PGID} --build-arg INSTALL_XDEBUG=${INSTALL_XDEBUG} -f ./docker/php-fpm/Dockerfile .
+    dockerfilePath: ./docker/php-fpm/Dockerfile
+    envVars:
+      - key: PHP_IDE_CONFIG
+        value: "serverName=Docker"
+    disk:
+      name: vendor
+      mountPath: /var/www/vendor
+      sizeGB: 1
+    healthCheckPath: /
+    port: 8080
+    routes:
+      - type: http
+        port: 8080
+
+  - type: pserv
+    name: postgres
+    env: docker
+    buildCommand: docker build -t postgres ./postgres
+    dockerfilePath: ./postgres/Dockerfile
+    envVars:
+      - key: POSTGRES_DB
+        value: ${POSTGRES_DB}
+      - key: POSTGRES_USER
+        value: ${POSTGRES_USER}
+      - key: POSTGRES_PASSWORD
+        value: ${POSTGRES_PASSWORD}
+    disk:
+      name: db_data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 10
+    port: 5432
