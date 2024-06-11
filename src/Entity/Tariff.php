@@ -3,9 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\TariffRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\TariffRepository;
 
 #[ORM\Entity(repositoryClass: TariffRepository::class)]
 #[ApiResource]
@@ -19,17 +20,20 @@ class Tariff
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column]
-    private ?int $price = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private ?float $price = null;
 
-    #[ORM\Column]
-    private ?int $discount_percentage = null;
+    #[ORM\Column(type: 'decimal', precision: 5, scale: 2)]
+    private ?float $discount = null;
 
-    /**
-     * @var Collection<int, Payment>
-     */
     #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'tariff_id')]
     private Collection $payments;
+
+
+    public function __construct()
+    {
+        $this->payments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -44,28 +48,36 @@ class Tariff
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(int $price): static
+    public function setPrice(float $price): static
     {
         $this->price = $price;
+
         return $this;
     }
 
-    public function getDiscountPercentage(): ?int
+    public function getDiscount(): ?float
     {
-        return $this->discount_percentage;
+        return $this->discount;
     }
 
-    public function setDiscountPercentage(int $discount_percentage): static
+    public function setDiscount(float $discount): static
     {
-        $this->discount_percentage = $discount_percentage;
+        $this->discount = $discount;
+
         return $this;
+    }
+
+    public function getPayments(): Collection
+    {
+        return $this->payments;
     }
 }

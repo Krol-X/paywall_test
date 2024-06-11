@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Entity\Payment;
+
 class BotService
 {
     public function start($data): bool
@@ -9,9 +11,9 @@ class BotService
         return true;
     }
 
-    public function createPayment($data): bool
+    public function createPayment($data): ?Payment
     {
-        return true;
+        return new Payment($data);
     }
 
     public function cancelPayment($data): bool
@@ -24,8 +26,8 @@ class BotService
         return [];
     }
 
-    public function getPaymentDetails($id): array
+    public function getPaymentDetails($id): ?Payment
     {
-        return [];
+        return null;
     }
 }

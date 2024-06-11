@@ -41,8 +41,9 @@ class BotController extends TelegramBotController
     {
         if ($this->botService->start($data)) {
             $this->SendMessage($chatId, 'Добрый день!', $this->WithKeyboard(self::MAIN_KEYBOARD));
+        } else {
+            $this->SendMessage($chatId, 'Ошибка при обработке команды /start');
         }
-        $this->SendMessage($chatId, 'Ошибка при обработке команды /start');
     }
 
     #[OnTelegramQuery(command: 'create-payment')]
@@ -57,8 +58,9 @@ class BotController extends TelegramBotController
                 ]
             ];
             $this->SendMessage($chatId, 'Платеж создан', $this->WithInlineKeyboard($PaymentKeyboard));
+        } else {
+            $this->SendMessage($chatId, 'Не удалось создать платеж');
         }
-        $this->SendMessage($chatId, 'Не удалось создать платеж');
     }
 
     #[OnTelegramQuery(command: 'cancel-payment')]
@@ -90,10 +92,24 @@ class BotController extends TelegramBotController
     #[OnTelegramQuery(pattern: "/^payment-\d+$/")]
     public function PaymentDetails($data, $chatId): void
     {
-        $payment = $this->botService->getPaymentDetails($data);
-        if ($payment != null) {
-            $this->SendMessage($chatId, "Платёж {$payment->id}\nСтатус: $payment->status...");
-            // лучше преобразовать как-то к response
+        $paymentId = (int) str_replace('payment-', '', $data['data']);
+        $payment = $this->botService->getPaymentDetails($paymentId);
+
+        if ($payment) {
+            $message = "Платёж {$payment->getId()}\n" .
+                "Статус: {$payment->getStatus()}\n" .
+                "Цена: {$payment->getPrice()} руб.\n" .
+                "С учётом скидки: " . ($payment->isDiscount() ? 'Да' : 'Нет') . "\n" .
+                "Дата создания: " . $payment->getCreatedAt()->format('Y-m-d H:i:s') . "\n";
+
+            $paidAt = $payment->getPaidAt();
+            if ($paidAt) {
+                $message .= "Дата оплаты: " . $paidAt->format('Y-m-d H:i:s') . "\n";
+            }
+
+            $this->sendMessage($chatId, $message);
+        } else {
+            $this->sendMessage($chatId, "Платёж не найден.");
         }
     }
 

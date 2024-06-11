@@ -29,11 +29,12 @@ class User
     #[ORM\Column(length: 4)]
     private ?string $language_code = null;
 
-    /**
-     * @var Collection<int, Payment>
-     */
+    #[ORM\Column(nullable: true)]
+    private ?string $photo_url = null;
+
     #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'user_id')]
     private Collection $payments;
+
 
     public function __construct()
     {
@@ -48,6 +49,7 @@ class User
     public function setTelegramId(int $telegram_id): static
     {
         $this->telegram_id = $telegram_id;
+
         return $this;
     }
 
@@ -71,6 +73,7 @@ class User
     public function setLastName(string $last_name): static
     {
         $this->last_name = $last_name;
+
         return $this;
     }
 
@@ -82,6 +85,7 @@ class User
     public function setUsername(string $username): static
     {
         $this->username = $username;
+
         return $this;
     }
 
@@ -93,12 +97,21 @@ class User
     public function setLanguageCode(string $language_code): static
     {
         $this->language_code = $language_code;
+
         return $this;
     }
 
-    /**
-     * @return Collection<int, Payment>
-     */
+    public function getPhotoUrl(): ?string
+    {
+        return $this->photo_url;
+    }
+
+    public function setPhotoUrl(?string $photo_url): static
+    {
+        $this->photo_url = $photo_url;
+        return $this;
+    }
+
     public function getPayments(): Collection
     {
         return $this->payments;
@@ -108,7 +121,7 @@ class User
     {
         if (!$this->payments->contains($payment)) {
             $this->payments->add($payment);
-            $payment->setUserId($this);
+            $payment->setUser($this);
         }
 
         return $this;
@@ -117,9 +130,8 @@ class User
     public function removePayment(Payment $payment): static
     {
         if ($this->payments->removeElement($payment)) {
-            // set the owning side to null (unless already changed)
-            if ($payment->getUserId() === $this) {
-                $payment->setUserId(null);
+            if ($payment->getUser() === $this) {
+                $payment->setUser(null);
             }
         }
 
