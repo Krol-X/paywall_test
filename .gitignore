@@ -1,6 +1,7 @@
 .idea
 
 .env*
+!.env
 !.env*.dist
 
 ###> symfony/framework-bundle ###
